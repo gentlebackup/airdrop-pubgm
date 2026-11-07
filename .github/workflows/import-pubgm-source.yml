@@ -1,0 +1,51 @@
+name: Import AIRDROP PUBGM source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "imports/AIRDROP-PUBGM-source.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  import-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate and extract source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="imports/AIRDROP-PUBGM-source.zip"
+          test -f "$archive"
+          if unzip -Z1 "$archive" | grep -E '(^/|(^|/)\.\.(/|$))'; then
+            echo "Unsafe path found in source archive."
+            exit 1
+          fi
+          if ! unzip -Z1 "$archive" | grep -q '^airdrop-pubgm/'; then
+            echo "Expected airdrop-pubgm/ folder was not found."
+            exit 1
+          fi
+          mkdir -p /tmp/airdrop-pubgm-import
+          unzip -q "$archive" -d /tmp/airdrop-pubgm-import
+          cp -a /tmp/airdrop-pubgm-import/airdrop-pubgm/. .
+          rm -f "$archive"
+          rmdir imports 2>/dev/null || true
+
+      - name: Commit imported application source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git commit -m "Add AIRDROP PUBGM application source"
+          git push
