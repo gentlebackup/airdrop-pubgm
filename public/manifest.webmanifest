@@ -1,0 +1,19 @@
+{
+  "name": "AIRDROP PUBGM",
+  "short_name": "AIRDROP",
+  "description": "A PUBG Mobile community for tournaments, custom rooms, player profiles, leaderboards and rewards.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080d12",
+  "theme_color": "#ff9f32",
+  "icons": [
+    {
+      "src": "/airdrop-pubgm-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

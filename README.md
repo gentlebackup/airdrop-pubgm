@@ -1,18 +1,25 @@
 # AIRDROP PUBGM
 
-PUBG Mobile community and tournament platform.
+A PUBG Mobile community and competition hub built as an independent PUBG Mobile community and competition platform.
 
-## Current stage
+## Stack
+- Next.js 16 / React 19
+- Supabase Auth, Postgres, Storage and Realtime
+- Vercel deployment
 
-The GitHub repository is being prepared first. Vercel deployment is intentionally on hold until you say you're ready.
+## Local setup
+1. Install Node.js 20.
+2. Run `npm install`.
+3. Copy `.env.example` to `.env.local`.
+4. Create a **new** Supabase project and set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+5. Apply the SQL in `supabase/migrations/` to the new project after the required base schema is available.
+6. Run `npm run dev`.
 
-Follow [the source import instructions](docs/IMPORT-SOURCE.md) to add the complete prepared application source. A GitHub Actions workflow will extract the uploaded ZIP into the repository root.
+## Important backend note
+The supplied source archive contains incremental security and feature migrations, not a complete first-time database schema. The web app has been disconnected from the original Supabase project, and the original URL/key are not included here. A fresh Supabase project still needs a complete baseline schema and matching RPC functions before login, tournaments, wallets, social features, and admin tools can operate. Do not connect this site to the old Cloud CODM Supabase project.
 
-## Later setup (when you're ready)
+## Deploy to Vercel
+Import this repository in Vercel, choose the Next.js framework preset, and add the two environment variables above. Redeploy after adding them.
 
-1. Import this repository into a **new** Vercel project.
-2. Create a completely separate Supabase project for AIRDROP PUBGM.
-3. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` using that new Supabase project.
-4. Complete the initial database schema and required RPC functions before enabling authentication, tournaments, wallet, feed, or other backend features.
-
-Do not connect this project to the database used by the older CODM website.
+## PUBG Mobile configuration
+The app branding and profile game ID are now PUBG Mobile-specific. Configure the new Supabase OAuth redirect URLs and Capacitor deep link as `airdroppubgm://auth/callback` if native builds are used.

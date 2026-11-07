@@ -1,0 +1,1 @@
+export default function manifest(){return {name:'AIRDROP PUBGM Admin',short_name:'AIRDROP Admin',description:'Private AIRDROP PUBGM administration',start_url:'/admin/',scope:'/admin/',display:'standalone',background_color:'#080d12',theme_color:'#ff9f32',icons:[{src:'/airdrop-pubgm-logo.svg',sizes:'any',type:'image/svg+xml'}]};}
