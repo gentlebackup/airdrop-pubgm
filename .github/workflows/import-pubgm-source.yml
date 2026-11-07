@@ -43,8 +43,11 @@ jobs:
           unzip -q "$archive" -d /tmp/airdrop-pubgm-import
           cp -a /tmp/airdrop-pubgm-import/airdrop-pubgm/. .
           # The connected GitHub App cannot push workflow files without the separate Workflows permission.
-          # Keep the import workflow already installed in this repository and omit the bundled QA workflow.
-          rm -f .github/workflows/mobile-build-qa.yml
+          # Preserve this importer and omit every other workflow bundled in the source ZIP.
+          if [ -d .github/workflows ]; then
+            find .github/workflows -type f ! -name 'import-pubgm-source.yml' -delete
+            find .github/workflows -depth -type d -empty -delete
+          fi
           rm -f "$archive"
           rmdir imports 2>/dev/null || true
 
