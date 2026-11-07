@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "imports/AIRDROP-PUBGM-source.zip"
+      - "imports/AIRDROP-PUBGM.zip"
 
 permissions:
   contents: write
@@ -20,8 +21,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          archive="imports/AIRDROP-PUBGM-source.zip"
-          test -f "$archive"
+          archive=""
+          if [ -f "imports/AIRDROP-PUBGM-source.zip" ]; then
+            archive="imports/AIRDROP-PUBGM-source.zip"
+          elif [ -f "imports/AIRDROP-PUBGM.zip" ]; then
+            archive="imports/AIRDROP-PUBGM.zip"
+          else
+            echo "Source ZIP was not found in imports/."
+            exit 1
+          fi
           if unzip -Z1 "$archive" | grep -E '(^/|(^|/)\.\.(/|$))'; then
             echo "Unsafe path found in source archive."
             exit 1
