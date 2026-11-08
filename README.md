@@ -18,7 +18,7 @@ A PUBG Mobile community and competition hub built as an independent platform.
 - Never connect this repository to the old CODM Supabase project.
 - Do not copy old player accounts, wallet balances, purchase records, withdrawals, messages or social posts.
 - The consolidated setup creates core identity, activity, tournament, feed, community, wallet-schema, progression and restricted admin-review foundations. It does **not** mean every app feature is finished or tested yet.
-- Credit purchase requests and admin review RPCs are present, but payment approval must remain disabled until the receiving bank details and manual reconciliation process are configured and tested. Cash withdrawals remain disabled and have no user-facing request RPC yet.
+- Credit purchase requests and admin review RPCs are present, but payment approval must remain disabled until the receiving bank details and manual reconciliation process are configured and tested. Cash withdrawals remain disabled; their RPCs explicitly refuse processing. Mission-level cash claims are also disabled until reward amounts are deliberately configured.
 - Cash withdrawals and credit purchases remain disabled by default. Do not manually enable either setting before the review workflows and payment controls are complete.
 - Do not add a Supabase service-role key to the website or GitHub.
 
