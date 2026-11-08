@@ -24,6 +24,7 @@ begin
  if to_regclass('public.player_account_moderation') is null then missing:=array_append(missing,'public.player_account_moderation'); end if;
  if to_regclass('public.profile_cosmetics') is null then missing:=array_append(missing,'public.profile_cosmetics'); end if;
  if to_regclass('public.admin_roles') is null then missing:=array_append(missing,'public.admin_roles'); end if;
+ if to_regclass('public.profile_mission_level_settings') is null then missing:=array_append(missing,'public.profile_mission_level_settings'); end if;
 
  if to_regprocedure('public.create_activity(public.activity_type,text,text,text,timestamp with time zone,integer,integer,text,text,text)') is null then missing:=array_append(missing,'RPC create_activity'); end if;
  if to_regprocedure('public.join_activity(uuid)') is null then missing:=array_append(missing,'RPC join_activity'); end if;
@@ -37,6 +38,7 @@ begin
  if to_regprocedure('public.player_leaderboard(integer)') is null then missing:=array_append(missing,'RPC player_leaderboard'); end if;
  if to_regprocedure('public.get_community_feed(integer)') is null then missing:=array_append(missing,'RPC get_community_feed'); end if;
  if to_regprocedure('public.create_credit_purchase_request(integer,text)') is null then missing:=array_append(missing,'RPC create_credit_purchase_request'); end if;
+ if to_regprocedure('public.airdrop_create_notification(uuid,text,text,text,uuid,uuid,uuid,text)') is null then missing:=array_append(missing,'RPC airdrop_create_notification'); end if;
 
  if cardinality(missing)>0 then
   raise exception 'AIRDROP PUBGM setup is incomplete. Missing: %',array_to_string(missing,', ');
@@ -57,6 +59,18 @@ begin
  if not exists(select 1 from pg_trigger where tgrelid=to_regclass('auth.users') and tgname='on_auth_user_created_airdrop' and not tgisinternal) then
   raise exception 'Setup check failed: new-user profile trigger is missing.';
  end if;
+ if not exists(select 1 from storage.buckets where id='avatars' and public=true) then
+  raise exception 'Storage check failed: public avatars bucket is missing.';
+ end if;
+ if not exists(select 1 from storage.buckets where id='feed-media' and public=true) then
+  raise exception 'Storage check failed: public feed-media bucket is missing.';
+ end if;
+ if not exists(select 1 from storage.buckets where id='tournament-evidence' and public=false) then
+  raise exception 'Storage check failed: private tournament-evidence bucket is missing.';
+ end if;
+ if (select count(*) from public.profile_cosmetics where active=true)<10 then
+  raise exception 'Store check failed: starter cosmetics have not been seeded.';
+ end if;
  raise notice 'AIRDROP PUBGM schema, key RPC, RLS and new-user trigger checks passed. Payment settings remain disabled.';
 end $$;
 
@@ -64,4 +78,6 @@ select
  (select count(*) from information_schema.tables where table_schema='public' and table_type='BASE TABLE') as public_tables,
  (select count(*) from information_schema.routines where specific_schema='public' and routine_type='FUNCTION') as public_functions,
  (select enabled from public.credit_purchase_settings where id=true) as credit_purchases_enabled,
- (select enabled from public.withdrawal_settings where id=true) as withdrawals_enabled;
+ (select enabled from public.withdrawal_settings where id=true) as withdrawals_enabled,
+ (select count(*) from public.profile_cosmetics where active=true) as active_cosmetics,
+ (select count(*) from storage.buckets where id in ('avatars','feed-media','tournament-evidence')) as configured_storage_buckets;
