@@ -153,21 +153,31 @@ create trigger profiles_sync_public after insert or update of profile_name,usern
 on public.profiles for each row execute function public.sync_public_profile();
 
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
-declare base_username text;
+returns trigger language plpgsql security definer set search_path=public,pg_temp as $
+declare
+  base_username text;
+  created_profile_id uuid;
 begin
   base_username := lower(regexp_replace(coalesce(new.email,'player'),'[^a-zA-Z0-9]+','','g'));
   if base_username = '' then base_username := 'player'; end if;
+
   insert into public.profiles(id,profile_name,username,pubgm_game_id)
   values(new.id,coalesce(new.raw_user_meta_data->>'full_name',''),
     base_username || '_' || substr(replace(new.id::text,'-',''),1,6),null)
-  on conflict(id) do nothing;
-  insert into public.creation_token_transactions(user_id,amount,reason)
-  values(new.id,10,'new_user_grant')
-  on conflict do nothing;
-  update public.profiles set creation_tokens=creation_tokens+10 where id=new.id;
+  on conflict(id) do nothing
+  returning id into created_profile_id;
+
+  -- Only the transaction that creates the profile grants the welcome tokens.
+  -- Replayed/duplicate auth provisioning cannot grant another 10 tokens.
+  if created_profile_id is not null then
+    update public.profiles
+      set creation_tokens=creation_tokens+10,updated_at=now()
+      where id=created_profile_id;
+    insert into public.creation_token_transactions(user_id,amount,reason)
+      values(created_profile_id,10,'new_user_grant');
+  end if;
   return new;
-end $$;
+end $;
 
 drop trigger if exists on_auth_user_created_airdrop on auth.users;
 create trigger on_auth_user_created_airdrop
