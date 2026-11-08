@@ -238,6 +238,11 @@ create policy notifications_read_own on public.notifications for select to authe
 drop policy if exists notifications_update_own on public.notifications;
 create policy notifications_update_own on public.notifications for update to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
 
+-- Do not allow clients to alter protected balances or system fields.
+revoke update on public.profiles from anon,authenticated;
+grant update(profile_name,username,region,phone,game_name,pubgm_game_id,avatar_url)
+on public.profiles to authenticated;
+
 revoke all on public.activity_secrets from anon,authenticated;
 revoke all on function public.get_activity_secret(uuid) from public;
 revoke all on function public.create_activity(public.activity_type,text,text,text,timestamptz,integer,integer,text,text,text) from public;
