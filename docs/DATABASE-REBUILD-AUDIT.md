@@ -1,6 +1,6 @@
 # AIRDROP PUBGM database rebuild audit
 
-Status: design/audit only. This document is not executable SQL.
+Status: implementation in progress. The consolidated SQL setup is committed, but it has NOT been executed or validated against the new Supabase project.
 
 ## Source material reviewed
 - AIRDROP PUBGM source ZIP imported into this repository.
@@ -24,18 +24,18 @@ The app also reads/writes profile, activity, participant, challenge, notificatio
 The ten SQL files currently in supabase/migrations/ are incremental feature/security migrations, not a complete first-install schema. Some explicitly say development-only or require review before production. They must not be treated as a complete fresh-project setup or blindly applied without a compatible baseline.
 
 ## Rebuild strategy
-1. Create a first-install baseline migration that defines the required enums, tables, constraints, indexes, triggers, RLS policies and storage buckets for a brand-new AIRDROP PUBGM Supabase project.
-2. Recreate app-facing RPCs using the actual app call signatures and the security intent of the reviewed migrations.
-3. Review every SECURITY DEFINER function, pin search_path, validate auth.uid(), restrict EXECUTE grants, and ensure wallet/credit changes are atomic and ledger-backed.
-4. Adapt CODM-specific profile fields, labels, notification text and media defaults to PUBG Mobile.
-5. Apply migrations only to the new AIRDROP PUBGM Supabase project after static review and a clean-project test.
-6. Verify signup/profile creation, activity creation/joining, 1v1 challenges, tournament brackets/results, social feed, moderation, credit purchase requests and withdrawal workflows before deployment.
+1. A consolidated fresh-project setup is committed at supabase/AIRDROP-PUBGM-SETUP.sql.
+2. The selected baseline defines core identity, activities, participants, room secrets, tournament brackets, feed/community, messaging, moderation, wallet/progression tables, cosmetics and admin review foundations.
+3. Core activity, participation, tournament, feed, leaderboard, progression, cosmetic and restricted admin RPCs have been authored using the current app call signatures.
+4. SECURITY DEFINER functions pin search_path, validate auth.uid(), and restrict client execution. Core credit debits and reward grants are atomic and ledger-backed.
+5. Credit purchases and withdrawals are disabled by default. Withdrawal request/update RPCs explicitly refuse processing. Mission cash reward levels are disabled until reward amounts are configured.
+6. The setup has not been run on Supabase and has not passed a clean-database integration test. Do not connect Vercel yet.
 
 ## Known limitations to resolve during implementation
 - The source ZIP does not contain the complete original first-install schema.
-- The inventory of columns does not include all primary keys, foreign keys, check constraints, indexes, enum labels, triggers, RLS policies or full stored-function bodies.
+- The inventory of old CODM columns does not include all original primary keys, foreign keys, check constraints, indexes, enum labels, triggers, RLS policies or full stored-function bodies.
 - Only selected original function bodies were supplied. Other RPCs must be reconstructed from the app's call signatures and the reviewed migration logic; they must not be represented as verbatim copies of the CODM implementation.
-- No migration has been run against the new Supabase project. The project remains separate and untouched by this audit.
+- No SQL has been run against the new Supabase project. The project remains separate and untouched.
 - Vercel must remain disconnected until the database is reviewed and the owner explicitly says to proceed.
 
 ## Safety decisions
