@@ -12,7 +12,9 @@ A PUBG Mobile community and competition hub built as an independent platform.
 2. Open the SQL Editor in that project.
 3. Open [supabase/AIRDROP-PUBGM-SETUP.sql](supabase/AIRDROP-PUBGM-SETUP.sql), copy the complete SQL, and run it once.
 4. Do not run the older files in `supabase/migrations/` individually. They are retained as source/reference migrations; the consolidated setup file contains the selected baseline and compatible feature schema.
-5. After the schema is installed, finish the remaining RPC functions and admin bootstrap steps before connecting the app to Vercel.
+5. Run [supabase/VERIFY-AIRDROP-PUBGM.sql](supabase/VERIFY-AIRDROP-PUBGM.sql) to perform read-only checks.
+6. Follow [docs/ADMIN-BOOTSTRAP.md](docs/ADMIN-BOOTSTRAP.md) to grant the first owner role after creating your player account.
+7. Complete end-to-end checks before connecting the app to Vercel.
 
 ## Important safety notes
 - Never connect this repository to the old CODM Supabase project.
@@ -21,6 +23,10 @@ A PUBG Mobile community and competition hub built as an independent platform.
 - Credit purchase requests and admin review RPCs are present, but payment approval must remain disabled until the receiving bank details and manual reconciliation process are configured and tested. Cash withdrawals remain disabled; their RPCs explicitly refuse processing. Mission-level cash claims are also disabled until reward amounts are deliberately configured.
 - Cash withdrawals and credit purchases remain disabled by default. Do not manually enable either setting before the review workflows and payment controls are complete.
 - Do not add a Supabase service-role key to the website or GitHub.
+
+## Automated build check
+
+GitHub Actions runs `npm ci` and `npm run build` on app and dependency changes. Check the **AIRDROP PUBGM Build Check** workflow before deployment.
 
 ## Local setup
 1. Install Node.js 20.
