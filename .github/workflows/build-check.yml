@@ -32,5 +32,9 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Audit dependency tree
+        run: |
+          npm audit --json > npm-audit.json || true
+          node -e "const a=require('./npm-audit.json'); for (const [name,v] of Object.entries(a.vulnerabilities||{})) console.log(name+' | '+v.severity+' | direct='+v.isDirect+' | fix='+JSON.stringify(v.fixAvailable))"
       - name: Build Next.js application
         run: npm run build
