@@ -13,6 +13,8 @@ begin
  if to_regclass('public.tournament_matches') is null then missing:=array_append(missing,'public.tournament_matches'); end if;
  if to_regclass('public.feed_posts') is null then missing:=array_append(missing,'public.feed_posts'); end if;
  if to_regclass('public.player_messages') is null then missing:=array_append(missing,'public.player_messages'); end if;
+ if to_regclass('public.player_follows') is null then missing:=array_append(missing,'public.player_follows'); end if;
+ if to_regclass('public.player_notification_settings') is null then missing:=array_append(missing,'public.player_notification_settings'); end if;
  if to_regclass('public.credit_purchase_settings') is null then missing:=array_append(missing,'public.credit_purchase_settings'); end if;
  if to_regclass('public.withdrawal_settings') is null then missing:=array_append(missing,'public.withdrawal_settings'); end if;
  if to_regclass('public.notifications') is null then missing:=array_append(missing,'public.notifications'); end if;
@@ -29,6 +31,9 @@ begin
  if to_regprocedure('public.seed_tournament(uuid)') is null then missing:=array_append(missing,'RPC seed_tournament'); end if;
  if to_regprocedure('public.admin_list_players()') is null then missing:=array_append(missing,'RPC admin_list_players'); end if;
  if to_regprocedure('public.admin_review_tournament_result(uuid,text,text)') is null then missing:=array_append(missing,'RPC admin_review_tournament_result'); end if;
+ if not exists(select 1 from storage.buckets where id='avatars' and public=true) then missing:=array_append(missing,'public avatars storage bucket'); end if;
+ if not exists(select 1 from storage.buckets where id='feed-media' and public=true) then missing:=array_append(missing,'public feed-media storage bucket'); end if;
+ if not exists(select 1 from storage.buckets where id='tournament-evidence' and public=false) then missing:=array_append(missing,'private tournament-evidence storage bucket'); end if;
  if to_regprocedure('public.player_leaderboard(integer)') is null then missing:=array_append(missing,'RPC player_leaderboard'); end if;
  if to_regprocedure('public.get_community_feed(integer)') is null then missing:=array_append(missing,'RPC get_community_feed'); end if;
  if to_regprocedure('public.create_credit_purchase_request(integer,text)') is null then missing:=array_append(missing,'RPC create_credit_purchase_request'); end if;
