@@ -1,1 +1,5 @@
 export const metadata = {title:'AIRDROP PUBGM Admin',applicationName:'AIRDROP PUBGM Admin',manifest:'/admin/manifest.webmanifest',appleWebApp:{capable:true,statusBarStyle:'black-translucent',title:'AIRDROP Admin'},icons:{icon:'/airdrop-pubgm-logo.svg',apple:'/airdrop-pubgm-logo.svg'}};
+
+export default function AdminLayout({ children }) {
+  return <>{children}</>;
+}
