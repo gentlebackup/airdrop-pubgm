@@ -1,0 +1,41 @@
+name: Refresh Safe Dependency Fixes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/dependency-refresh.trigger'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply non-breaking security fixes
+        run: npm audit fix
+      - name: Verify clean installation
+        run: npm ci
+      - name: Verify production build
+        run: npm run build
+      - name: Commit updated dependency files
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes were needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "Fix vulnerable npm dependencies"
+          git push
