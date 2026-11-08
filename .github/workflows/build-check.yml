@@ -10,6 +10,8 @@ on:
       - 'package-lock.json'
       - 'next.config.mjs'
       - 'capacitor.config.ts'
+      - 'supabase/**/*.sql'
+      - 'scripts/check_app_contract.py'
       - '.github/workflows/build-check.yml'
   pull_request:
     branches: [main]
@@ -34,5 +36,7 @@ jobs:
         run: npm ci
       - name: Block high and critical dependency vulnerabilities
         run: npm audit --audit-level=high
+      - name: Check app database contract
+        run: python3 scripts/check_app_contract.py
       - name: Build Next.js application
         run: npm run build
