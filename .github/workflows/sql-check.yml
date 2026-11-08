@@ -1,0 +1,32 @@
+name: AIRDROP PUBGM SQL Syntax Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**/*.sql'
+      - 'scripts/check_sql.py'
+      - '.github/workflows/sql-check.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/**/*.sql'
+      - 'scripts/check_sql.py'
+      - '.github/workflows/sql-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PostgreSQL parser
+        run: pip install pglast
+      - name: Parse SQL files
+        run: python scripts/check_sql.py
