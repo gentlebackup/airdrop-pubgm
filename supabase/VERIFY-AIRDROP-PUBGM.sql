@@ -71,6 +71,9 @@ begin
  if (select count(*) from public.profile_cosmetics where active=true)<10 then
   raise exception 'Store check failed: starter cosmetics have not been seeded.';
  end if;
+ if (select count(*) from public.achievements)<5 then
+  raise exception 'Progression check failed: starter achievements have not been seeded.';
+ end if;
  raise notice 'AIRDROP PUBGM schema, key RPC, RLS and new-user trigger checks passed. Payment settings remain disabled.';
 end $$;
 
@@ -80,4 +83,5 @@ select
  (select enabled from public.credit_purchase_settings where id=true) as credit_purchases_enabled,
  (select enabled from public.withdrawal_settings where id=true) as withdrawals_enabled,
  (select count(*) from public.profile_cosmetics where active=true) as active_cosmetics,
+ (select count(*) from public.achievements) as achievements,
  (select count(*) from storage.buckets where id in ('avatars','feed-media','tournament-evidence')) as configured_storage_buckets;
