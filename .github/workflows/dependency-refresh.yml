@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Apply non-breaking security fixes
+      - name: Update vulnerable Next.js release
+        run: npm install next@16.4.5 --save-exact
+      - name: Apply remaining non-breaking security fixes
         run: npm audit fix
       - name: Verify clean installation
         run: npm ci
