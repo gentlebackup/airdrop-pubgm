@@ -17,8 +17,8 @@ A PUBG Mobile community and competition hub built as an independent platform.
 ## Important safety notes
 - Never connect this repository to the old CODM Supabase project.
 - Do not copy old player accounts, wallet balances, purchase records, withdrawals, messages or social posts.
-- The consolidated setup creates core identity, activity, tournament, feed, community, wallet-schema and progression tables. It does **not** mean every app feature is finished yet.
-- Credit purchase approvals, cash withdrawals, tournament result approvals and several admin workflows still require their dedicated secure RPCs and end-to-end testing.
+- The consolidated setup creates core identity, activity, tournament, feed, community, wallet-schema, progression and restricted admin-review foundations. It does **not** mean every app feature is finished or tested yet.
+- Credit purchase requests and admin review RPCs are present, but payment approval must remain disabled until the receiving bank details and manual reconciliation process are configured and tested. Cash withdrawals remain disabled and have no user-facing request RPC yet.
 - Cash withdrawals and credit purchases remain disabled by default. Do not manually enable either setting before the review workflows and payment controls are complete.
 - Do not add a Supabase service-role key to the website or GitHub.
 
@@ -28,6 +28,19 @@ A PUBG Mobile community and competition hub built as an independent platform.
 3. Copy `.env.example` to `.env.local`.
 4. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` using the new project's values.
 5. Run `npm run dev`.
+
+## First admin account
+After the first player account has been created through Supabase Auth, use the SQL Editor to grant your own account administrator access. Replace the email below with the exact email used for your AIRDROP PUBGM account:
+
+```sql
+insert into public.admin_roles(user_id, role)
+select id, 'super_admin'
+from auth.users
+where lower(email) = lower('YOUR-ACCOUNT-EMAIL')
+on conflict (user_id, role) do nothing;
+```
+
+Do not grant this role to anyone else unless you intend to give them administrator permissions.
 
 ## Deploy to Vercel
 Wait until the database and app checks are complete. Then import this repository in Vercel, select the Next.js framework preset, and add the two public environment variables above. Do not connect Vercel until the project owner explicitly approves.
