@@ -26,6 +26,8 @@ jobs:
         run: npm install next@16.4.5 --save-exact
       - name: Apply remaining non-breaking security fixes
         run: npm audit fix
+      - name: Confirm dependency audit is clean
+        run: npm audit --audit-level=moderate
       - name: Verify clean installation
         run: npm ci
       - name: Verify production build
