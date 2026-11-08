@@ -2020,3 +2020,17 @@ grant execute on function public.seed_tournament(uuid) to authenticated;
 commit;
 
 -- ===== END supabase/migrations/20261108200000_airdrop_pubgm_tournament_bye_fix.sql =====
+
+
+-- ===== BEGIN supabase/migrations/20261108210000_airdrop_pubgm_message_report_policy.sql =====
+-- AIRDROP PUBGM — allow players to submit message reports, with admin-only review access
+
+begin;
+drop policy if exists message_reports_insert_self on public.player_message_reports;
+create policy message_reports_insert_self on public.player_message_reports for insert to authenticated
+with check(reporter_id=auth.uid() and exists(select 1 from public.player_messages m where m.id=message_id and (m.sender_id=auth.uid() or m.recipient_id=auth.uid())));
+grant insert on public.player_message_reports to authenticated;
+revoke update,delete on public.player_message_reports from anon,authenticated;
+commit;
+
+-- ===== END supabase/migrations/20261108210000_airdrop_pubgm_message_report_policy.sql =====
