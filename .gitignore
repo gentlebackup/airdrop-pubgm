@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Deployment
+.vercel/
+
+# Capacitor / native build output
+android/.gradle/
+android/app/build/
+ios/App/Pods/
+ios/App/build/
+
+# Logs and caches
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.DS_Store
+*.tsbuildinfo
