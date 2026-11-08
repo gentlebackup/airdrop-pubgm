@@ -36,17 +36,8 @@ GitHub Actions runs `npm ci` and `npm run build` on app and dependency changes. 
 5. Run `npm run dev`.
 
 ## First admin account
-After the first player account has been created through Supabase Auth, use the SQL Editor to grant your own account administrator access. Replace the email below with the exact email used for your AIRDROP PUBGM account:
 
-```sql
-insert into public.admin_roles(user_id, role)
-select id, 'super_admin'
-from auth.users
-where lower(email) = lower('YOUR-ACCOUNT-EMAIL')
-on conflict (user_id, role) do nothing;
-```
-
-Do not grant this role to anyone else unless you intend to give them administrator permissions.
+Follow [docs/ADMIN-BOOTSTRAP.md](docs/ADMIN-BOOTSTRAP.md) to grant the `owner` role to your own account after it has been created. The project intentionally creates no administrator automatically.
 
 ## Deploy to Vercel
 Wait until the database and app checks are complete. Then import this repository in Vercel, select the Next.js framework preset, and add the two public environment variables above. Do not connect Vercel until the project owner explicitly approves.
