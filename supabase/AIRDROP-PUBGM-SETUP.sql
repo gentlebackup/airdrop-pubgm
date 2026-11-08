@@ -2401,3 +2401,26 @@ using(bucket_id='avatars' and (storage.foldername(name))[1]=auth.uid()::text);
 commit;
 
 -- ===== END supabase/migrations/20261108270000_airdrop_pubgm_avatar_storage.sql =====
+
+
+-- ===== BEGIN supabase/migrations/20261108280000_airdrop_pubgm_admin_evidence_access.sql =====
+-- AIRDROP PUBGM — allow admins to inspect private tournament evidence
+-- Players can still read only their own uploads; admins may read evidence for review.
+
+begin;
+
+drop policy if exists tournament_evidence_admin_read on storage.objects;
+create policy tournament_evidence_admin_read on storage.objects
+for select to authenticated
+using (
+ bucket_id='tournament-evidence'
+ and exists(
+  select 1 from public.admin_roles r
+  where r.user_id=auth.uid()
+    and r.role in('admin','moderator','super_admin','owner')
+ )
+);
+
+commit;
+
+-- ===== END supabase/migrations/20261108280000_airdrop_pubgm_admin_evidence_access.sql =====
