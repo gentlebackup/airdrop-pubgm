@@ -1,9 +1,9 @@
--- AIRDROP PUBGM — consolidated fresh-project setup
--- Apply this file ONCE in the SQL Editor of the NEW project:
--- https://supabase.com/dashboard/project/hefzuyonyrbxanwfxibg/sql/new
--- Do not run the legacy incremental migrations separately.
--- This script creates the core app schema, community/feed, tournaments and core activity RPCs.
--- It does not enable cash withdrawals or credit purchases; those remain disabled pending audited payment setup.
+-- AIRDROP PUBGM — consolidated fresh-project database setup
+-- Generated from the repository's ordered baseline and feature migrations.
+-- Intended only for the NEW project: https://hefzuyonyrbxanwfxibg.supabase.co
+-- Run ONCE in that project's SQL Editor. Never run against the old CODM project.
+-- Credit purchases and withdrawals are disabled by default. This script does not configure payment credentials.
+-- A successful SQL run does not replace the app build, auth, storage, and end-to-end checks.
 
 
 
@@ -2034,33 +2034,3 @@ revoke update,delete on public.player_message_reports from anon,authenticated;
 commit;
 
 -- ===== END supabase/migrations/20261108210000_airdrop_pubgm_message_report_policy.sql =====
-
-
--- ===== BEGIN supabase/migrations/20261108220000_airdrop_pubgm_admin_mission_queue_labels.sql =====
--- AIRDROP PUBGM — enrich the admin mission-claim queue with safe profile labels
-
-begin;
-drop function if exists public.admin_profile_mission_level_claims();
-create function public.admin_profile_mission_level_claims()
-returns table(
- id uuid,user_id uuid,level integer,required_activities integer,cash_reward_usd numeric,
- status text,reviewed_by uuid,reviewed_at timestamptz,paid_at timestamptz,
- reviewer_note text,created_at timestamptz,collectible_code text,claimed_at timestamptz,
- payout_reference text,profile_name text,username text
-)
-language plpgsql security definer set search_path=public,pg_temp as $$
-begin
- perform public._airdrop_require_admin(false);
- return query
- select c.id,c.user_id,c.level,c.required_activities,c.cash_reward_usd,c.status,
-  c.reviewed_by,c.reviewed_at,c.paid_at,c.reviewer_note,c.created_at,
-  c.collectible_code,c.claimed_at,c.payout_reference,p.profile_name,p.username
- from public.profile_mission_level_claims c
- join public.profiles p on p.id=c.user_id
- order by c.created_at asc;
-end $$;
-revoke all on function public.admin_profile_mission_level_claims() from public,anon;
-grant execute on function public.admin_profile_mission_level_claims() to authenticated;
-commit;
-
--- ===== END supabase/migrations/20261108220000_airdrop_pubgm_admin_mission_queue_labels.sql =====
