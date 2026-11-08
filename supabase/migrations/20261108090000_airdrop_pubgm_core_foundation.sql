@@ -143,7 +143,7 @@ create trigger profiles_sync_public after insert or update of profile_name,usern
 on public.profiles for each row execute function public.sync_public_profile();
 
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path=public,pg_temp as $
+returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
 declare
   base_username text;
   created_profile_id uuid;
@@ -162,7 +162,7 @@ begin
     values(created_profile_id,10,'new_user_grant');
   end if;
   return new;
-end $;
+end $$;
 
 drop trigger if exists on_auth_user_created_airdrop on auth.users;
 create trigger on_auth_user_created_airdrop
